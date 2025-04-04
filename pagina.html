@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cotações de Frete</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f4f4f9;
+        color: #333;
+        margin: 0;
+        padding: 20px;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        background-color: #fff;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+      }
+      h1 {
+        color: #007bff;
+        font-size: 24px;
+        margin-bottom: 20px;
+      }
+      .section {
+        margin-bottom: 20px;
+      }
+      .section-title {
+        font-size: 18px;
+        margin-bottom: 10px;
+        color: #555;
+      }
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 10px;
+      }
+      .info-card {
+        background-color: #f1f1f1;
+        padding: 10px;
+        border-radius: 5px;
+        font-size: 0.9em;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+      }
+      th,
+      td {
+        padding: 12px;
+        border-bottom: 1px solid #ddd;
+        text-align: left;
+      }
+      th {
+        background-color: #007bff;
+        color: #fff;
+      }
+      tr:hover {
+        background-color: #f1f1f1;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Resultado das Cotações de Frete</h1>
+
+      <div class="section destinatario">
+        <h2 class="section-title">Destinatário</h2>
+        <div class="info-grid">
+          <div class="info-card">Nome: <span id="nome"></span></div>
+          <div class="info-card">
+            CNPJ: <span id="situacaoCNPJ"></span> - <span id="ufCNPJ"></span>
+          </div>
+          <div class="info-card">
+            Endereço: <span id="rua"></span>, <span id="bairro"></span>,
+            <span id="cidade"></span> - <span id="uf"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section itens">
+        <h2 class="section-title">Itens</h2>
+        <table id="itens-table">
+          <tbody>
+            <tr>
+              <th>Volumes</th>
+              <td id="volumes"></td>
+            </tr>
+            <tr>
+              <th>Valor Total NF</th>
+              <td id="valorTotal"></td>
+            </tr>
+            <tr>
+              <th>Itens</th>
+              <td id="itens"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="section cotacoes">
+        <h2 class="section-title">Resultado das Cotações</h2>
+        <table id="cotacoes-table">
+          <thead>
+            <tr>
+              <th>Valor do Frete</th>
+              <th>Prazo</th>
+              <th>Tipo de Frete</th>
+              <th>Modalidade</th>
+              <th>ID da Cotação</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Dados das cotações serão adicionados aqui -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <script>
+      fetch(
+        "https://script.google.com/macros/s/AKfycbw1InktM1NdvukrjxQN1fWWBfSwdZtZoNb33xVZGrWv4Rqkl5FhNUYOOBVrgzlaWBFiWw/exec"
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          const dados = data;
+
+          document.getElementById("nome").textContent = dados.destinatario.nome;
+          document.getElementById("situacaoCNPJ").textContent =
+            dados.destinatario.situacaoCNPJ;
+          document.getElementById("ufCNPJ").textContent =
+            dados.destinatario.ufCNPJ;
+          document.getElementById("rua").textContent = dados.destinatario.rua;
+          document.getElementById("bairro").textContent =
+            dados.destinatario.bairro;
+          document.getElementById("cidade").textContent =
+            dados.destinatario.cidade;
+          document.getElementById("uf").textContent = dados.destinatario.uf;
+
+          document.getElementById("volumes").textContent = dados.itens.volumes;
+          document.getElementById("valorTotal").textContent =
+            "R$ " + dados.itens.valorTotal;
+          document.getElementById("itens").textContent =
+            dados.itens.itens || ""; // Ajuste se necessário
+
+          const cotacoesContainer = document
+            .getElementById("cotacoes-table")
+            .getElementsByTagName("tbody")[0];
+          cotacoesContainer.innerHTML = ""; // Limpa o conteúdo existente, se houver
+          dados.cotacoes.forEach((cotacao) => {
+            const row = cotacoesContainer.insertRow();
+            Object.values(cotacao).forEach((value) => {
+              const cell = row.insertCell();
+              cell.textContent = value || "";
+            });
+          });
+        })
+        .catch((error) => console.error("Erro ao buscar dados:", error));
+    </script>
+  </body>
+</html>
